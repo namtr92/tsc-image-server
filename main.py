@@ -171,7 +171,7 @@ async def capture_image():
         
         current_image = large_image
     image_captured_event.clear()
-    capture_event.clear()
+    
     
     #large_image = np.zeros((4000,5000,3), dtype=np.uint8)
     
@@ -244,7 +244,7 @@ async def add_calibration_image():
         selected_image = random.choice(list_of_files)
         large_image = cv2.imread(os.path.join('calibration_images', selected_image))
         current_image = large_image
-    capture_event.clear()
+    #capture_event.clear()
     
     #large_image = cv2.imread('test_img.png')
     image_calib,conners = calibration_tool.add_calibrate_image(current_image)
@@ -274,7 +274,7 @@ async def add_color_corection_image():
         selected_image = random.choice(list_of_files)
         large_image = cv2.imread(os.path.join('color_corection_images', selected_image))
         current_image = large_image
-    capture_event.clear()
+    #capture_event.clear()
     image_result = current_image.copy()
     
     #large_image = cv2.imread('test_img.png')
@@ -308,6 +308,7 @@ def camera_thread_func():
                         bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
                         image_captured_data = bgr_frame.as_opencv_image()
                     image_captured_event.set()
+                    capture_event.clear()
             print('Camera disconnected. Reconnecting...', flush=True)
             time.sleep(10)
 def uvicorn_run():
