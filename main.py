@@ -3,6 +3,9 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse, JSONResponse
 import os
+from dotenv import load_dotenv
+
+
 import json
 from fastapi.responses import StreamingResponse
 from PIL import Image
@@ -26,7 +29,7 @@ import requests
 global image_captured_data
 global current_image
 global connected_camera
-analyze_url= 'http://newocean.synology.me:8888'
+
 image_captured_data = None
 current_image = None
 connected_camera = None
@@ -36,7 +39,9 @@ image_captured_event = threading.Event()
 image_captured_event.clear()
 origins = [
 '*'
-]    
+] 
+load_dotenv()
+analyze_url= os.getenv('AI_API_URL')   
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
