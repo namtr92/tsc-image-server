@@ -187,6 +187,8 @@ async def capture_image():
 
 @app.get("/analyze_image")
 async def analyze_image(qr_code: str):
+    if qr_code == 'undefined':
+        return {"status": False, "message": "QRCode not found"}
     global current_image
     # URL of the FastAPI server
     url = f"{analyze_url}/api/v2/inspection_t_shirt/"
@@ -211,7 +213,11 @@ async def analyze_image(qr_code: str):
     # }
     # Send the request to FastAPI
     response = requests.post(url, data= {"data":json.dumps(data)}, files=files)
-    return JSONResponse(content=response.json(), status_code=response.status_code)
+    try:
+        content = response.json()
+        return JSONResponse(content=content, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"status": False, "message": "Error"}, status_code=500)
 @app.post("/add_calibration_points")
 async def add_calibration_points(item: CalibrationCorner):
     corners = json.loads(item.data)
