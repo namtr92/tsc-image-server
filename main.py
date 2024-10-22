@@ -297,7 +297,7 @@ def camera_thread_func():
 def uvicorn_run():
     uvicorn.run(app, host="localhost", port=8000)
 if __name__ == "__main__":
-    #threading.Thread(target=camera_thread_func).start()
-    #camera_thread_func()
+    threading.Thread(target=camera_thread_func).start()
+    camera_thread_func()
     uvicorn_run()
     
