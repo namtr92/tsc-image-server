@@ -295,7 +295,8 @@ def camera_thread_func():
                 while capture_event.wait():               
                     for frame in cam.get_frame_generator(limit=1, timeout_ms=3000):
                         print('Got {}'.format(frame), flush=True)
-                        image_captured_data = frame.as_opencv_image()
+                        bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
+                        image_captured_data = bgr_frame.as_opencv_image()
                     image_captured_event.set()
             time.sleep(10)
 def uvicorn_run():
