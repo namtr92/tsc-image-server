@@ -302,6 +302,7 @@ def camera_thread_func():
                         bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
                         image_captured_data = bgr_frame.as_opencv_image()
                     image_captured_event.set()
+            print('Camera disconnected. Reconnecting...', flush=True)
             time.sleep(10)
 def uvicorn_run():
     uvicorn.run(app, host="localhost", port=8000)
