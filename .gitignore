@@ -1,0 +1,76 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test results
+.coverage
+.tox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+.dmypy.json.*/
+
+# Pyre
+.pyre/
+
+# Cython debug symbols
+cython_debug/
+
+# Environment variables and secrets
+.env
+
+# FastAPI specific
+instance/
+*.db
+*.sqlite3
+
+# PyCharm and VSCode files
+.idea/
+.vscode/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+*.out
+*.err
+
+
+# Local files for debugging purposes
+*.local
+*.dev
+*.tmp
+
+# Static and media files (optional, if managed outside the repo)
+staticfiles/
+mediafiles/
+checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+calibration_data/*
+# SQLAlchemy migrations (Alembic, if applicable)
+migrations/
