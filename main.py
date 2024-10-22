@@ -297,6 +297,7 @@ def camera_thread_func():
     with VmbSystem.get_instance():
         while True:
             with get_camera(None) as cam:
+                print('Camera connected', flush=True)
                 if cam is None:
                     print('Waiting for camera to be connected...', flush=True)
                     time.sleep(10)
@@ -309,6 +310,7 @@ def camera_thread_func():
                         image_captured_data = bgr_frame.as_opencv_image()
                     image_captured_event.set()
                     capture_event.clear()
+                    print('Image captured', flush=True)
             print('Camera disconnected. Reconnecting...', flush=True)
             time.sleep(10)
 def uvicorn_run():
