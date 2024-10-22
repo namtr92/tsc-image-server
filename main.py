@@ -285,6 +285,10 @@ def camera_thread_func():
     with VmbSystem.get_instance():
         while True:
             with get_camera(None) as cam:
+                if cam is None:
+                    print('Waiting for camera to be connected...', flush=True)
+                    time.sleep(10)
+                    continue
                 global connected_camera
                 connected_camera = cam
                 global image_captured_data
@@ -298,6 +302,5 @@ def uvicorn_run():
     uvicorn.run(app, host="localhost", port=8000)
 if __name__ == "__main__":
     threading.Thread(target=camera_thread_func).start()
-    camera_thread_func()
     uvicorn_run()
     
