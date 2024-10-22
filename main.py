@@ -158,7 +158,7 @@ async def capture_image():
     global image_captured_data
     global capture_event
     capture_event.set()
-    if image_captured_event.wait(3):
+    if image_captured_event.wait(5):
         current_image = image_captured_data
     else:
         test_image_url = df.iloc[random.randint(0, len(df) - 1), 0]+"?raw=true"
