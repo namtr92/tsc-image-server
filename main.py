@@ -304,7 +304,7 @@ def camera_thread_func():
                     continue
                 connected_camera = cam
                 while capture_event.wait():               
-                    for frame in cam.get_frame_generator(limit=1, timeout_ms=3000):
+                    for frame in cam.get_frame_generator(limit=1, timeout_ms=5000):
                         print('Got {}'.format(frame), flush=True)
                         bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
                         image_captured_data = bgr_frame.as_opencv_image()
