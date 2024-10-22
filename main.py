@@ -156,6 +156,7 @@ async def read_qrcode():
 async def capture_image():
     global current_image
     global image_captured_data
+    global capture_event
     capture_event.set()
     if image_captured_event.wait(3):
         current_image = image_captured_data
@@ -224,6 +225,7 @@ async def calibrate_camera():
 async def add_calibration_image():
     global image_captured_data
     global current_image
+    global capture_event
     capture_event.set()
     if image_captured_event.wait(1):
         image_captured_event.clear()
@@ -253,6 +255,7 @@ async def add_calibration_image():
 async def add_color_corection_image():
     global image_captured_data
     global current_image
+    global capture_event
     capture_event.set()
     if image_captured_event.wait(1):
         image_captured_event.clear()
@@ -282,6 +285,9 @@ async def add_color_corection_image():
 
 
 def camera_thread_func():
+    global connected_camera               
+    global image_captured_data
+    global capture_event
     with VmbSystem.get_instance():
         while True:
             with get_camera(None) as cam:
@@ -289,9 +295,7 @@ def camera_thread_func():
                     print('Waiting for camera to be connected...', flush=True)
                     time.sleep(10)
                     continue
-                global connected_camera
                 connected_camera = cam
-                global image_captured_data
                 while capture_event.wait():               
                     for frame in cam.get_frame_generator(limit=1, timeout_ms=3000):
                         print('Got {}'.format(frame), flush=True)
