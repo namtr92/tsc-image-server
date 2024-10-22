@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse, JSONResponse
 import os
 from dotenv import load_dotenv
-
+import copy
 
 import json
 from fastapi.responses import StreamingResponse
@@ -304,9 +304,10 @@ def camera_thread_func():
                     continue
                 connected_camera = cam
                 while capture_event.wait():               
-                    for frame in cam.get_frame_generator(limit=5, timeout_ms=5000):
+                    for frame in cam.get_frame_generator(limit=1, timeout_ms=5000):
                         print('Got {}'.format(frame), flush=True)
-                        bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
+                        frame_test = copy.deepcopy(frame)
+                        bgr_frame = frame_test.convert_pixel_format(PixelFormat.Bgr8)
                         image_captured_data = bgr_frame.as_opencv_image()
                     image_captured_event.set()
                     capture_event.clear()
