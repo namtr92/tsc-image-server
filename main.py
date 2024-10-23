@@ -233,7 +233,6 @@ async def add_calibration_image():
     global image_captured_event
     SoftwareTrigger()
     if image_captured_event.wait(5):
-        image_captured_event.clear()
         current_image = image_captured_data
     else:
         # random select image from calibration_images folder
@@ -263,7 +262,7 @@ async def add_color_corection_image():
     global current_image
     global image_captured_event
     SoftwareTrigger()
-    if image_captured_event.wait(5):
+    if image_captured_event.wait(10):
         
         current_image = image_captured_data
     else:
