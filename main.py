@@ -142,6 +142,8 @@ def divide_image(image, num_divide):
 @app.get("/read_qrcode")
 async def read_qrcode():
     global current_image
+    if current_image is None:
+        return Response(status_code=404, content="Camera not found")
     rgb_image = cv2.cvtColor(current_image, cv2.COLOR_BGR2RGB)
     qrcode_data = get_qrcode_data(rgb_image)
     if qrcode_data is not None:
@@ -150,13 +152,14 @@ async def read_qrcode():
         qrcode_data['qr_image'] = base64.b64encode(qr_image_encoded.tobytes()).decode('utf-8')
         return qrcode_data
     else:
-        raise HTTPException(status_code=404, detail="QRCode not found")
+        raise Response(status_code=404, content="QRCode not found")
     #raise HTTPException(status_code=404, detail="Camera not found")
 @app.get("/capture")
 async def capture_image():
     global current_image
     global image_captured_data
     if not SoftwareTrigger():
+        return Response(status_code=404, content="Cannot trigger camera")
         return {"status": False, "message": "Cannot trigger camera"}
     if image_captured_event.wait(10):
         current_image = image_captured_data
