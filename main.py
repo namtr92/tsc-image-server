@@ -155,9 +155,21 @@ async def read_qrcode():
         raise Response(status_code=404, content="QRCode not found")
     #raise HTTPException(status_code=404, detail="Camera not found")
 @app.get("/capture")
-async def capture_image():
+async def capture_image(test_mode: Optional[bool] = False):
     global current_image
     global image_captured_data
+    print(f"test_mode {test_mode}")
+    if test_mode:
+        test_image_url = df.iloc[random.randint(0, len(df) - 1), 0]+"?raw=true"
+        print(test_image_url)
+        response = requests.get(test_image_url)
+        large_image = cv2.imdecode(np.frombuffer(response.content, np.uint8), cv2.IMREAD_COLOR)
+        #large_image = cv2.imread('test_img.png')
+        global current_image
+        current_image = large_image
+        display_image = cv2.resize(current_image, (current_image.shape[1]//4, current_image.shape[0]//4))
+        _, img_encoded = cv2.imencode('.jpg', display_image)
+        return Response(content=img_encoded.tobytes(), media_type="image/jpeg")
     if not SoftwareTrigger():
         return Response(status_code=404, content="Cannot trigger camera")
         return {"status": False, "message": "Cannot trigger camera"}
