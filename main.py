@@ -156,8 +156,7 @@ async def read_qrcode():
 async def capture_image():
     global current_image
     global image_captured_data
-    global capture_event
-    capture_event.set()
+    SoftwareTrigger()
     if image_captured_event.wait(5):
         current_image = image_captured_data
     else:
@@ -289,7 +288,28 @@ async def add_color_corection_image():
         print(e)
         return {"image": b64Image, 'status': False}
 
+class Handler:
+    def __init__(self):
+        self.shutdown_event = threading.Event()
 
+    def __call__(self, cam: Camera, stream: Stream, frame: Frame):
+        global image_captured_data
+        global image_captured_event
+        if frame.get_status() == FrameStatus.Complete:
+            print('{} acquired {}'.format(cam, frame), flush=True)
+            # Convert frame if it is not already the correct format
+            if frame.get_pixel_format() == PixelFormat.Bgr8:
+                display = frame
+            else:
+                # This creates a copy of the frame. The original `frame` object can be requeued
+                # safely while `display` is used
+                display = frame.convert_pixel_format(PixelFormat.Bgr8)
+            image_captured_data = display.as_opencv_image()
+            image_captured_event.set()
+        cam.queue_frame(frame)
+def SoftwareTrigger():
+    global connected_camera
+    connected_camera.TriggerSoftware.run()
 def camera_thread_func():
     global connected_camera               
     global image_captured_data
@@ -302,16 +322,26 @@ def camera_thread_func():
                     print('Waiting for camera to be connected...', flush=True)
                     time.sleep(10)
                     continue
+                #set camera to software trigger mode
+                cam.TriggerMode.set('On')
+                cam.TriggerSource.set('Software')
                 connected_camera = cam
-                while capture_event.wait():               
-                    for frame in cam.get_frame_generator(limit=1, timeout_ms=5000):
-                        print('Got {}'.format(frame), flush=True)
-                        frame_test = copy.deepcopy(frame)
-                        bgr_frame = frame_test.convert_pixel_format(PixelFormat.Bgr8)
-                        image_captured_data = bgr_frame.as_opencv_image()
-                    image_captured_event.set()
-                    capture_event.clear()
-                    print('Image captured', flush=True)
+                handler = Handler()
+                try:
+                    # Start Streaming with a custom a buffer of 10 Frames (defaults to 5)
+                    cam.start_streaming(handler=handler, buffer_count=10)
+                    handler.shutdown_event.wait()
+
+                finally:
+                    cam.stop_streaming()
+                # while capture_event.wait():               
+                #     for frame in cam.get_frame_generator(limit=1, timeout_ms=5000):
+                #         print('Got {}'.format(frame), flush=True)
+                #         bgr_frame = frame.convert_pixel_format(PixelFormat.Bgr8)
+                #         image_captured_data = bgr_frame.as_opencv_image()
+                #     image_captured_event.set()
+                #     capture_event.clear()
+                #     print('Image captured', flush=True)
             print('Camera disconnected. Reconnecting...', flush=True)
             time.sleep(10)
 def uvicorn_run():
