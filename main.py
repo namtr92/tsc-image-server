@@ -309,6 +309,8 @@ class Handler:
         cam.queue_frame(frame)
 def SoftwareTrigger():
     global connected_camera
+    global image_captured_event
+    image_captured_event.clear()
     connected_camera.TriggerSoftware.run()
 def camera_thread_func():
     global connected_camera               
