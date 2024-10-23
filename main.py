@@ -230,8 +230,7 @@ async def calibrate_camera():
 async def add_calibration_image():
     global image_captured_data
     global current_image
-    global capture_event
-    capture_event.set()
+    SoftwareTrigger()
     if image_captured_event.wait(1):
         image_captured_event.clear()
         current_image = image_captured_data
@@ -260,8 +259,7 @@ async def add_calibration_image():
 async def add_color_corection_image():
     global image_captured_data
     global current_image
-    global capture_event
-    capture_event.set()
+    SoftwareTrigger()
     if image_captured_event.wait(1):
         image_captured_event.clear()
         current_image = image_captured_data
