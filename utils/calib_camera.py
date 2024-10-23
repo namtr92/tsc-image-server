@@ -113,7 +113,6 @@ class CalibrationTool:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
         ret, corners = cv2.findChessboardCorners(gray, self.pattern_size, None) #conners shape (36,1,2)
-        print(corners.shape)
         if ret:
             draw_chessboard_corners(img, self.pattern_size, corners)
             #cv2.drawChessboardCorners(gray, self.pattern_size, corners, ret)
