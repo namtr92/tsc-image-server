@@ -152,7 +152,7 @@ async def read_qrcode():
         qrcode_data['qr_image'] = base64.b64encode(qr_image_encoded.tobytes()).decode('utf-8')
         return qrcode_data
     else:
-        raise Response(status_code=404, content="QRCode not found")
+        return Response(status_code=404, content="QRCode not found")
     #raise HTTPException(status_code=404, detail="Camera not found")
 @app.get("/capture")
 async def capture_image(test_mode: Optional[bool] = False):
