@@ -231,7 +231,7 @@ async def add_calibration_image():
     global image_captured_data
     global current_image
     SoftwareTrigger()
-    if image_captured_event.wait(1):
+    if image_captured_event.wait(5):
         image_captured_event.clear()
         current_image = image_captured_data
     else:
@@ -242,6 +242,7 @@ async def add_calibration_image():
         selected_image = random.choice(list_of_files)
         large_image = cv2.imread(os.path.join('calibration_images', selected_image))
         current_image = large_image
+    image_captured_event.clear()
     #capture_event.clear()
     
     #large_image = cv2.imread('test_img.png')
@@ -260,8 +261,8 @@ async def add_color_corection_image():
     global image_captured_data
     global current_image
     SoftwareTrigger()
-    if image_captured_event.wait(1):
-        image_captured_event.clear()
+    if image_captured_event.wait(5):
+        
         current_image = image_captured_data
     else:
         # random select image from calibration_images folder
@@ -271,6 +272,7 @@ async def add_color_corection_image():
         selected_image = random.choice(list_of_files)
         large_image = cv2.imread(os.path.join('color_corection_images', selected_image))
         current_image = large_image
+    image_captured_event.clear()
     #capture_event.clear()
     image_result = current_image.copy()
     
