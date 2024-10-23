@@ -156,33 +156,24 @@ async def read_qrcode():
 async def capture_image():
     global current_image
     global image_captured_data
-    SoftwareTrigger()
-    if image_captured_event.wait(5):
+    if not SoftwareTrigger():
+        return {"status": False, "message": "Cannot trigger camera"}
+    if image_captured_event.wait(10):
         current_image = image_captured_data
     else:
         test_image_url = df.iloc[random.randint(0, len(df) - 1), 0]+"?raw=true"
         print(test_image_url)
-        #test_image_url = "https://github.com/pntrungbk15/Printing/blob/main/report/imgs/28540E2_32825429__001_138_002_G8_B_2__1_5_5.jpg?raw=true"
         response = requests.get(test_image_url)
         large_image = cv2.imdecode(np.frombuffer(response.content, np.uint8), cv2.IMREAD_COLOR)
-        #large_image = cv2.imread('test_img.png')
         #large_image = cv2.imread('test_img.png')
         
         current_image = large_image
     image_captured_event.clear()
-    
-    
-    #large_image = np.zeros((4000,5000,3), dtype=np.uint8)
-    
-    
-    _, img_encoded = cv2.imencode('.jpg', current_image)
+    #resize image for faster processing
+    display_image = cv2.resize(current_image, (current_image.shape[1]//4, current_image.shape[0]//4))
+    _, img_encoded = cv2.imencode('.jpg', display_image)
     #large_image = cv2.resize(image_captured_data, (1000, int(image_captured_data.shape[0] * 1000 / image_captured_data.shape[1])))
     return Response(content=img_encoded.tobytes(), media_type="image/jpeg")
-    image_pil = Image.fromarray(image_captured_data.reshape(image_captured_data.shape[0:2]),mode="L")
-    image_path = 'image.jpg'
-    image_pil.save(image_path)
-    return FileResponse(image_path, media_type='image/png')
-    #raise HTTPException(status_code=404, detail="Camera not found")
 
 @app.get("/analyze_image")
 async def analyze_image(qr_code: str):
@@ -231,7 +222,8 @@ async def add_calibration_image():
     global image_captured_data
     global current_image
     global image_captured_event
-    SoftwareTrigger()
+    if not SoftwareTrigger():
+        return {"status": False, "message": "Cannot trigger camera"}
     if image_captured_event.wait(10):
         current_image = image_captured_data
     else:
@@ -261,7 +253,8 @@ async def add_color_corection_image():
     global image_captured_data
     global current_image
     global image_captured_event
-    SoftwareTrigger()
+    if not SoftwareTrigger():
+        return {"status": False, "message": "Cannot trigger camera"}
     if image_captured_event.wait(10):
         
         current_image = image_captured_data
@@ -312,7 +305,12 @@ def SoftwareTrigger():
     global connected_camera
     global image_captured_event
     image_captured_event.clear()
-    connected_camera.TriggerSoftware.run()
+    try:
+        connected_camera.TriggerSoftware.run()
+        return True
+    except Exception as e:
+        print("Cannot trigger camera")
+        return False
 def camera_thread_func():
     global connected_camera               
     global image_captured_data
