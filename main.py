@@ -139,6 +139,7 @@ def divide_image(image, num_divide):
         for j in range(num_divide):
             images.append(image[i*h:(i+1)*h, j*w:(j+1)*w])
     return images
+@app.get("/read_qrcode")
 async def read_qrcode():
     global current_image
     if current_image is None:
