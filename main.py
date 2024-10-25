@@ -139,7 +139,6 @@ def divide_image(image, num_divide):
         for j in range(num_divide):
             images.append(image[i*h:(i+1)*h, j*w:(j+1)*w])
     return images
-@app.get("/read_qrcode")
 async def read_qrcode():
     global current_image
     if current_image is None:
@@ -268,13 +267,20 @@ async def add_color_corection_image():
     global image_captured_data
     global current_image
     global image_captured_event
-    if not SoftwareTrigger():
-        return {"status": False, "message": "Cannot trigger camera"}
-    if image_captured_event.wait(10):
-        
-        current_image = image_captured_data
+    if True:
+        if not SoftwareTrigger():
+            return {"status": False, "message": "Cannot trigger camera"}
+        if image_captured_event.wait(10):        
+            current_image = image_captured_data
+        else:
+            # random select image from calibration_images folder
+            list_of_files = os.listdir('color_corection_images')
+            if not os.path.exists('color_corection_images'):
+                os.mkdir('color_corection_images')
+            selected_image = random.choice(list_of_files)
+            large_image = cv2.imread(os.path.join('color_corection_images', selected_image))
+            current_image = large_image
     else:
-        # random select image from calibration_images folder
         list_of_files = os.listdir('color_corection_images')
         if not os.path.exists('color_corection_images'):
             os.mkdir('color_corection_images')
